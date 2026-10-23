@@ -1,10 +1,19 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { unitNumber, type Grade, type Unit } from "@/lib/curriculum";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Container } from "@/components/container";
 
-export function UnitView({ grade, unit }: { grade: Grade; unit: Unit }) {
+export function UnitView({
+  grade,
+  unit,
+  children,
+}: {
+  grade: Grade;
+  unit: Unit;
+  children?: ReactNode;
+}) {
   const Icon = unit.icon;
   const accent =
     grade.tone === "blue"
@@ -46,12 +55,16 @@ export function UnitView({ grade, unit }: { grade: Grade; unit: Unit }) {
         </p>
       </header>
 
-      <section className="mt-8 rounded-3xl border border-dashed border-slate-300 bg-white/80 p-6 sm:p-8 dark:border-slate-600 dark:bg-slate-900/80">
-        <h2 className="text-lg font-bold">單元入口</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base dark:text-slate-300">
-          這頁負責把課題位置留好。筆記、地圖練習和溫習工具尚未加入，可以先返回年級頁，或改看其他單元。
-        </p>
-      </section>
+      {children ? (
+        <div className="mt-8">{children}</div>
+      ) : (
+        <section className="mt-8 rounded-3xl border border-dashed border-slate-300 bg-white/80 p-6 sm:p-8 dark:border-slate-600 dark:bg-slate-900/80">
+          <h2 className="text-lg font-bold">單元入口</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base dark:text-slate-300">
+            這頁負責把課題位置留好。筆記、地圖練習和溫習工具尚未加入，可以先返回年級頁，或改看其他單元。
+          </p>
+        </section>
+      )}
 
       <section className="mt-10">
         <h2 className="text-lg font-bold">同一年級的單元</h2>

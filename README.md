@@ -19,4 +19,4 @@ npm run dev
 - `/s1/urban-land-use`、`/s1/housing-industry`、`/s1/cbd`
 - `/s2/industries`、`/s2/relocation`、`/s2/global-shift`
 
-單元頁只保留導覽位置，尚未加入筆記或溫習工具。
+中一單元一已加入香港18區地圖挑戰。其他單元頁暫時只保留導覽位置。

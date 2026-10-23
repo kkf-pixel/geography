@@ -77,7 +77,7 @@ export const grades: Grade[] = [
         "urban-land-use",
         "單元一",
         "香港的市區與土地利用",
-        "看市區範圍，以及土地可以怎樣劃分用途。",
+        "看市區範圍，以及土地可以怎樣劃分用途。用18區地圖挑戰溫習行政分區。",
         Map,
       ),
       createUnit(
