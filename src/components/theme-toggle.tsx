@@ -26,6 +26,22 @@ function publish() {
   listeners.forEach((listener) => listener());
 }
 
+export function applyStoredTheme() {
+  try {
+    const stored = localStorage.getItem("theme");
+    const theme: Theme =
+      stored === "light" || stored === "dark"
+        ? stored
+        : window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+    document.documentElement.setAttribute("data-theme", theme);
+    publish();
+  } catch {
+    /* Storage can be blocked; keep the theme already on the page. */
+  }
+}
+
 export function ThemeToggle() {
   const theme = useSyncExternalStore(subscribe, readTheme, getServerTheme);
   const isDark = theme === "dark";

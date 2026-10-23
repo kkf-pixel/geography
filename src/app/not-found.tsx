@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { Compass } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/container";
+
+export const metadata: Metadata = {
+  title: "找不到頁面",
+};
 
 export default function NotFound() {
   return (
