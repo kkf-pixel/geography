@@ -3,10 +3,10 @@
 import { Compass, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { navLinks } from "@/lib/curriculum";
 import { Container } from "@/components/container";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { applyStoredTheme, ThemeToggle } from "@/components/theme-toggle";
 
 function isCurrent(href: string, pathname: string) {
   if (href === "/") {
@@ -36,6 +36,10 @@ export function Navbar() {
     setMenuPath(pathname);
     setOpen(false);
   }
+
+  useLayoutEffect(() => {
+    applyStoredTheme();
+  }, [pathname]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
