@@ -83,11 +83,11 @@ export function MapChallenge() {
       return;
     }
 
-    const image = event.currentTarget;
-    const x = (event.nativeEvent.offsetX / image.clientWidth) * 100;
-    const y = (event.nativeEvent.offsetY / image.clientHeight) * 100;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
     const chosen = hitDistrict(x, y);
-    const isCorrect = chosen?.id === currentDistrict.id;
+    const isCorrect = chosen.id === currentDistrict.id;
     const feedback: Feedback = {
       id: Date.now() + Math.floor(Math.random() * 1000),
       x,

@@ -23,7 +23,7 @@ export const DISTRICTS: District[] = [
     number: 1,
     x: 32,
     y: 26,
-    area: { left: 14, top: 8, right: 48, bottom: 36 },
+    area: { left: 12, top: 6, right: 50, bottom: 40 },
   },
   {
     id: "north",
@@ -32,7 +32,7 @@ export const DISTRICTS: District[] = [
     number: 2,
     x: 55,
     y: 12,
-    area: { left: 38, top: 4, right: 78, bottom: 20 },
+    area: { left: 34, top: 2, right: 84, bottom: 24 },
   },
   {
     id: "tai_po",
@@ -41,7 +41,7 @@ export const DISTRICTS: District[] = [
     number: 3,
     x: 54,
     y: 24,
-    area: { left: 46, top: 16, right: 72, bottom: 32 },
+    area: { left: 42, top: 14, right: 76, bottom: 36 },
   },
   {
     id: "tuen_mun",
@@ -50,7 +50,7 @@ export const DISTRICTS: District[] = [
     number: 4,
     x: 22,
     y: 44,
-    area: { left: 8, top: 30, right: 34, bottom: 52 },
+    area: { left: 6, top: 26, right: 38, bottom: 56 },
   },
   {
     id: "tsuen_wan",
@@ -59,7 +59,7 @@ export const DISTRICTS: District[] = [
     number: 5,
     x: 47,
     y: 38,
-    area: { left: 36, top: 30, right: 54, bottom: 44 },
+    area: { left: 30, top: 26, right: 58, bottom: 48 },
   },
   {
     id: "sha_tin",
@@ -68,7 +68,7 @@ export const DISTRICTS: District[] = [
     number: 6,
     x: 58,
     y: 34,
-    area: { left: 50, top: 26, right: 70, bottom: 42 },
+    area: { left: 46, top: 22, right: 74, bottom: 46 },
   },
   {
     id: "kwai_tsing",
@@ -77,7 +77,7 @@ export const DISTRICTS: District[] = [
     number: 7,
     x: 47,
     y: 48,
-    area: { left: 40, top: 42, right: 52, bottom: 54 },
+    area: { left: 36, top: 38, right: 56, bottom: 58 },
   },
   {
     id: "sai_kung",
@@ -86,7 +86,7 @@ export const DISTRICTS: District[] = [
     number: 8,
     x: 72,
     y: 46,
-    area: { left: 64, top: 18, right: 96, bottom: 58 },
+    area: { left: 60, top: 14, right: 98, bottom: 62 },
   },
   {
     id: "sham_shui_po",
@@ -95,7 +95,7 @@ export const DISTRICTS: District[] = [
     number: 9,
     x: 54,
     y: 48,
-    area: { left: 50, top: 44, right: 58, bottom: 52 },
+    area: { left: 46, top: 40, right: 62, bottom: 56 },
   },
   {
     id: "yau_tsim_mong",
@@ -104,7 +104,7 @@ export const DISTRICTS: District[] = [
     number: 10,
     x: 54,
     y: 56,
-    area: { left: 50, top: 52, right: 58, bottom: 60 },
+    area: { left: 46, top: 48, right: 62, bottom: 64 },
   },
   {
     id: "kowloon_city",
@@ -113,7 +113,7 @@ export const DISTRICTS: District[] = [
     number: 11,
     x: 57,
     y: 52,
-    area: { left: 54, top: 48, right: 62, bottom: 56 },
+    area: { left: 50, top: 44, right: 66, bottom: 60 },
   },
   {
     id: "wong_tai_sin",
@@ -122,7 +122,7 @@ export const DISTRICTS: District[] = [
     number: 12,
     x: 60,
     y: 47,
-    area: { left: 56, top: 42, right: 66, bottom: 50 },
+    area: { left: 52, top: 38, right: 70, bottom: 54 },
   },
   {
     id: "kwun_tong",
@@ -131,7 +131,7 @@ export const DISTRICTS: District[] = [
     number: 13,
     x: 64,
     y: 53,
-    area: { left: 60, top: 48, right: 70, bottom: 58 },
+    area: { left: 56, top: 44, right: 76, bottom: 62 },
   },
   {
     id: "central_western",
@@ -140,7 +140,7 @@ export const DISTRICTS: District[] = [
     number: 14,
     x: 51,
     y: 62,
-    area: { left: 46, top: 58, right: 54, bottom: 68 },
+    area: { left: 42, top: 54, right: 58, bottom: 72 },
   },
   {
     id: "wan_chai",
@@ -149,7 +149,7 @@ export const DISTRICTS: District[] = [
     number: 15,
     x: 57,
     y: 64,
-    area: { left: 50, top: 56, right: 64, bottom: 72 },
+    area: { left: 48, top: 54, right: 66, bottom: 74 },
   },
   {
     id: "eastern",
@@ -158,7 +158,7 @@ export const DISTRICTS: District[] = [
     number: 16,
     x: 63,
     y: 64,
-    area: { left: 60, top: 58, right: 72, bottom: 70 },
+    area: { left: 56, top: 54, right: 78, bottom: 74 },
   },
   {
     id: "southern",
@@ -167,7 +167,7 @@ export const DISTRICTS: District[] = [
     number: 17,
     x: 60,
     y: 73,
-    area: { left: 50, top: 66, right: 70, bottom: 80 },
+    area: { left: 46, top: 62, right: 76, bottom: 86 },
   },
   {
     id: "islands",
@@ -176,7 +176,7 @@ export const DISTRICTS: District[] = [
     number: 18,
     x: 38,
     y: 68,
-    area: { left: 6, top: 52, right: 48, bottom: 88 },
+    area: { left: 2, top: 48, right: 52, bottom: 94 },
   },
 ];
 
@@ -207,12 +207,10 @@ function closestDistrict(districts: District[], x: number, y: number) {
   });
 }
 
-export function hitDistrict(x: number, y: number): District | null {
+export function hitDistrict(x: number, y: number): District {
   const inside = DISTRICTS.filter((district) => contains(district, x, y));
   if (inside.length > 0) {
     return closestDistrict(inside, x, y);
   }
-
-  const nearest = closestDistrict(DISTRICTS, x, y);
-  return distanceTo(nearest, x, y) <= 14 ? nearest : null;
+  return closestDistrict(DISTRICTS, x, y);
 }
