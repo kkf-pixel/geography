@@ -1,7 +1,7 @@
 import type { Grade } from "@/lib/curriculum";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Container } from "@/components/container";
-import { MapChallenge } from "@/components/map-challenge";
+import { MapGameLink } from "@/components/map-game-link";
 import { SquadGameLink } from "@/components/squad-game-link";
 
 export function GradeView({ grade }: { grade: Grade }) {
@@ -62,7 +62,7 @@ export function GradeView({ grade }: { grade: Grade }) {
               單元一至三共用兩個遊戲：先認18區，再以衝鋒隊溫習土地利用。
             </p>
           </div>
-          <MapChallenge />
+          <MapGameLink />
           <SquadGameLink />
         </div>
       ) : (
