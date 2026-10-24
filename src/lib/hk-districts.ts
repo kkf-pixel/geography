@@ -8,7 +8,6 @@ export type District = {
 };
 
 export const QUESTION_MAP_SRC = "/maps/hk-18-question.jpg";
-export const HINT_MAP_SRC = "/maps/hk-18-hint.jpg";
 
 export const DISTRICTS: District[] = [
   { id: "yuen_long", name: "元朗區 (Yuen Long)", shortName: "元朗區", number: 1, x: 32, y: 26 },

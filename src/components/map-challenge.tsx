@@ -2,9 +2,9 @@
 
 import { Lightbulb, MapPinned, RotateCcw, Trophy, X } from "lucide-react";
 import { useEffect, useId, useState } from "react";
+import { HintMapImage } from "@/components/hint-map-image";
 import {
   DISTRICTS,
-  HINT_MAP_SRC,
   HIT_RADIUS,
   QUESTION_MAP_SRC,
   nearestDistrict,
@@ -156,11 +156,7 @@ export function MapChallenge() {
               提示圖
             </p>
             <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-[#e8f4ff] dark:border-slate-700">
-              <img
-                src={HINT_MAP_SRC}
-                alt="香港18區彩色提示地圖"
-                className="h-auto w-full"
-              />
+              <HintMapImage />
             </div>
           </div>
           <button
@@ -291,11 +287,7 @@ export function MapChallenge() {
               香港18區提示圖
             </h3>
             <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-[#e8f4ff] dark:border-slate-700">
-              <img
-                src={HINT_MAP_SRC}
-                alt="香港18區彩色提示地圖"
-                className="h-auto w-full"
-              />
+              <HintMapImage />
             </div>
             <div className="mt-4 text-center">
               <button
