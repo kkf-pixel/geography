@@ -1,17 +1,13 @@
 "use client";
 
-import {
-  Lightbulb,
-  MapPinned,
-  RotateCcw,
-  Trophy,
-  X,
-} from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
-import { HongKongDistrictsMap } from "@/components/hong-kong-districts-map";
+import { Lightbulb, MapPinned, RotateCcw, Trophy, X } from "lucide-react";
+import { useEffect, useId, useState } from "react";
 import {
   DISTRICTS,
+  HINT_MAP_SRC,
   HIT_RADIUS,
+  QUESTION_MAP_SRC,
+  nearestDistrict,
   shuffleDistricts,
   type District,
 } from "@/lib/hk-districts";
@@ -44,7 +40,6 @@ export function MapChallenge() {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [showHint, setShowHint] = useState(false);
   const [hintUsedForCurrent, setHintUsedForCurrent] = useState(false);
-  const mapRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
 
   useEffect(() => {
@@ -84,16 +79,17 @@ export function MapChallenge() {
     setGameState("end");
   }
 
-  function handleMapClick(event: React.MouseEvent<HTMLDivElement>) {
-    if (gameState !== "playing" || !currentDistrict || !mapRef.current) {
+  function handleMapClick(event: React.MouseEvent<HTMLImageElement>) {
+    if (gameState !== "playing" || !currentDistrict) {
       return;
     }
 
-    const rect = mapRef.current.getBoundingClientRect();
+    const rect = event.currentTarget.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
-    const distance = Math.hypot(x - currentDistrict.x, y - currentDistrict.y);
-    const isCorrect = distance < HIT_RADIUS;
+    const nearest = nearestDistrict(x, y);
+    const isCorrect =
+      nearest.district.id === currentDistrict.id && nearest.distance < HIT_RADIUS;
     const feedback: Feedback = {
       id: Date.now() + Math.floor(Math.random() * 1000),
       x,
@@ -153,7 +149,7 @@ export function MapChallenge() {
             <li>系統會顯示目標地區的名稱。</li>
             <li>請在下方無字地圖中，點擊對應的數字區域。</li>
             <li>點對加 10 分，點錯扣 2 分。</li>
-            <li>忘記了？可以使用「提示」查看地名，但每次會扣 3 分！</li>
+            <li>忘記了？可以使用「提示」查看彩色地圖，但每次會扣 3 分！</li>
           </ol>
           <button
             type="button"
@@ -195,7 +191,7 @@ export function MapChallenge() {
               className="press inline-flex min-h-11 items-center gap-2 rounded-full bg-orange-500 px-5 text-sm font-bold text-slate-950"
             >
               <Lightbulb className="size-4" aria-hidden="true" />
-              提示（查看舊地圖）
+              提示（查看彩色地圖）
             </button>
             {hintUsedForCurrent ? (
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
@@ -204,12 +200,14 @@ export function MapChallenge() {
             ) : null}
           </div>
 
-          <div
-            ref={mapRef}
-            className="map-container relative mt-4 cursor-crosshair overflow-hidden rounded-2xl border-4 border-white bg-[#9fd4ea] shadow-[0_16px_36px_-22px_rgb(15_23_42_/_0.55)] dark:border-slate-800"
-            onClick={handleMapClick}
-          >
-            <HongKongDistrictsMap mode="blank" />
+          <div className="map-container relative mt-4 overflow-hidden rounded-2xl border-4 border-white shadow-[0_16px_36px_-22px_rgb(15_23_42_/_0.55)] dark:border-slate-800">
+            <img
+              src={QUESTION_MAP_SRC}
+              alt="香港18區無字地圖"
+              className="map-image w-full cursor-crosshair select-none"
+              draggable={false}
+              onClick={handleMapClick}
+            />
             {feedbacks.map((feedback) => (
               <div
                 key={feedback.id}
@@ -280,8 +278,12 @@ export function MapChallenge() {
             <h3 id={titleId} className="pr-12 text-xl font-bold">
               香港18區提示圖
             </h3>
-            <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700">
-              <HongKongDistrictsMap mode="labeled" />
+            <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-[#e8f4ff] dark:border-slate-700">
+              <img
+                src={HINT_MAP_SRC}
+                alt="香港18區彩色提示地圖"
+                className="h-auto w-full"
+              />
             </div>
             <div className="mt-4 text-center">
               <button
