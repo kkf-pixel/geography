@@ -5,9 +5,8 @@ import { useEffect, useId, useState } from "react";
 import { HintMapImage } from "@/components/hint-map-image";
 import {
   DISTRICTS,
-  HIT_RADIUS,
   QUESTION_MAP_SRC,
-  nearestDistrict,
+  hitDistrict,
   shuffleDistricts,
   type District,
 } from "@/lib/hk-districts";
@@ -84,12 +83,11 @@ export function MapChallenge() {
       return;
     }
 
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.height) * 100;
-    const nearest = nearestDistrict(x, y);
-    const isCorrect =
-      nearest.district.id === currentDistrict.id && nearest.distance < HIT_RADIUS;
+    const image = event.currentTarget;
+    const x = (event.nativeEvent.offsetX / image.clientWidth) * 100;
+    const y = (event.nativeEvent.offsetY / image.clientHeight) * 100;
+    const chosen = hitDistrict(x, y);
+    const isCorrect = chosen?.id === currentDistrict.id;
     const feedback: Feedback = {
       id: Date.now() + Math.floor(Math.random() * 1000),
       x,
