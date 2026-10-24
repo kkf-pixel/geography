@@ -136,7 +136,7 @@ export function MapChallenge() {
         </div>
         <span className="inline-flex min-h-10 items-center gap-2 self-start rounded-full bg-blue-50 px-3 text-sm font-bold text-blue-800 dark:bg-blue-500/15 dark:text-sky-200">
           <MapPinned className="size-4" aria-hidden="true" />
-          18 區
+          遊戲一 · 18 區
         </span>
       </div>
 

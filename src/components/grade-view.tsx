@@ -2,6 +2,7 @@ import type { Grade } from "@/lib/curriculum";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Container } from "@/components/container";
 import { MapChallenge } from "@/components/map-challenge";
+import { SquadRunner } from "@/components/squad-runner";
 
 export function GradeView({ grade }: { grade: Grade }) {
   const Icon = grade.icon;
@@ -54,8 +55,15 @@ export function GradeView({ grade }: { grade: Grade }) {
       </section>
 
       {grade.id === "s1" ? (
-        <div className="mt-8">
+        <div className="mt-8 space-y-8">
+          <div>
+            <h2 className="text-lg font-bold">溫習遊戲</h2>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+              單元一至三共用兩個遊戲：先認18區，再以衝鋒隊溫習土地利用。
+            </p>
+          </div>
           <MapChallenge />
+          <SquadRunner />
         </div>
       ) : (
         <section className="mt-8 rounded-3xl border border-dashed border-slate-300 bg-white/80 p-6 sm:p-8 dark:border-slate-600 dark:bg-slate-900/80">
