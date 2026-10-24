@@ -151,6 +151,18 @@ export function MapChallenge() {
             <li>點對加 10 分，點錯扣 2 分。</li>
             <li>忘記了？可以使用「提示」查看彩色地圖，但每次會扣 3 分！</li>
           </ol>
+          <div className="mt-6">
+            <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+              提示圖
+            </p>
+            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-[#e8f4ff] dark:border-slate-700">
+              <img
+                src={HINT_MAP_SRC}
+                alt="香港18區彩色提示地圖"
+                className="h-auto w-full"
+              />
+            </div>
+          </div>
           <button
             type="button"
             onClick={startGame}
