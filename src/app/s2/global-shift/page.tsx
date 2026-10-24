@@ -1,7 +1,5 @@
-import { unitRoute } from "@/lib/route-pages";
+import { redirect } from "next/navigation";
 
-const route = unitRoute("s2", "global-shift");
-
-export const metadata = route.metadata;
-
-export default route.Page;
+export default function GlobalShiftRedirect() {
+  redirect("/s2");
+}

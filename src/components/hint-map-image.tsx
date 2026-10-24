@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import hintMap from "@/assets/maps/hk-18-hint.jpg";
 

@@ -46,16 +46,9 @@ export function GradeCard({ grade }: { grade: Grade }) {
         {grade.description}
       </p>
 
-      <ul className="mt-4 flex flex-wrap gap-2">
-        {grade.units.map((unit) => (
-          <li
-            key={unit.slug}
-            className={`rounded-full px-3 py-1 text-xs font-medium ${tone.chip}`}
-          >
-            {unit.label}
-          </li>
-        ))}
-      </ul>
+      <p className={`mt-4 inline-flex rounded-full px-3 py-1 text-xs font-medium ${tone.chip}`}>
+        {grade.combinedLabel}
+      </p>
 
       <span className="mt-auto block pt-8">
         <span
