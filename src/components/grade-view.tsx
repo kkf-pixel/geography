@@ -2,7 +2,7 @@ import type { Grade } from "@/lib/curriculum";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Container } from "@/components/container";
 import { MapChallenge } from "@/components/map-challenge";
-import { SquadRunner } from "@/components/squad-runner";
+import { SquadGameLink } from "@/components/squad-game-link";
 
 export function GradeView({ grade }: { grade: Grade }) {
   const Icon = grade.icon;
@@ -63,7 +63,7 @@ export function GradeView({ grade }: { grade: Grade }) {
             </p>
           </div>
           <MapChallenge />
-          <SquadRunner />
+          <SquadGameLink />
         </div>
       ) : (
         <section className="mt-8 rounded-3xl border border-dashed border-slate-300 bg-white/80 p-6 sm:p-8 dark:border-slate-600 dark:bg-slate-900/80">
