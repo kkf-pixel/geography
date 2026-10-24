@@ -149,7 +149,7 @@ export const DISTRICTS: District[] = [
     number: 15,
     x: 57,
     y: 64,
-    area: { left: 54, top: 58, right: 60, bottom: 68 },
+    area: { left: 50, top: 56, right: 64, bottom: 72 },
   },
   {
     id: "eastern",
