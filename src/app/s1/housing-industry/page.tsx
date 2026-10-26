@@ -1,7 +1,5 @@
-import { unitRoute } from "@/lib/route-pages";
+import { redirect } from "next/navigation";
 
-const route = unitRoute("s1", "housing-industry");
-
-export const metadata = route.metadata;
-
-export default route.Page;
+export default function HousingIndustryRedirect() {
+  redirect("/s1");
+}

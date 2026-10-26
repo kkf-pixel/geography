@@ -12,8 +12,8 @@ const steps = [
   },
   {
     icon: Layers,
-    title: "進入單元",
-    text: "每個年級有三個課題入口，先揀想看的一個。",
+    title: "進入課題",
+    text: "每個年級的單元一至三都合在同一頁。",
   },
   {
     icon: MapPinned,
