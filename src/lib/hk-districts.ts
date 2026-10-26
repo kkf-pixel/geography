@@ -44,24 +44,23 @@ export function shuffleDistricts(districts: District[] = DISTRICTS): District[] 
   return next;
 }
 
-export function loadHitMap(src: string = HIT_MAP_SRC): Promise<ImageData> {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = image.naturalWidth;
-      canvas.height = image.naturalHeight;
-      const context = canvas.getContext("2d");
-      if (!context) {
-        reject(new Error("Could not read the district hit map."));
-        return;
-      }
-      context.drawImage(image, 0, 0);
-      resolve(context.getImageData(0, 0, canvas.width, canvas.height));
-    };
-    image.onerror = () => reject(new Error("Could not load the district hit map."));
-    image.src = src;
-  });
+export async function loadHitMap(src: string = HIT_MAP_SRC): Promise<ImageData> {
+  const response = await fetch(src);
+  if (!response.ok) {
+    throw new Error("Could not load the district hit map.");
+  }
+
+  const blob = await response.blob();
+  const bitmap = await createImageBitmap(blob, { colorSpaceConversion: "none" });
+  const canvas = document.createElement("canvas");
+  canvas.width = bitmap.width;
+  canvas.height = bitmap.height;
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  if (!context) {
+    throw new Error("Could not read the district hit map.");
+  }
+  context.drawImage(bitmap, 0, 0);
+  return context.getImageData(0, 0, canvas.width, canvas.height);
 }
 
 function sampleDistrictNumber(hitMap: ImageData, x: number, y: number): number {
@@ -70,7 +69,7 @@ function sampleDistrictNumber(hitMap: ImageData, x: number, y: number): number {
   }
   const index = (y * hitMap.width + x) * 4;
   const alpha = hitMap.data[index + 3];
-  const number = hitMap.data[index];
+  const number = Math.round(hitMap.data[index] / 10);
   return alpha > 0 && number >= 1 && number <= 18 ? number : 0;
 }
 

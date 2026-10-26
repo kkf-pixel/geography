@@ -210,7 +210,7 @@ def main() -> None:
             if number == 0:
                 continue
             counts[number] += 1
-            hit_pixels[x, y] = (number, 0, 0, 255)
+            hit_pixels[x, y] = (number * 10, 0, 0, 255)
             color = PALETTE[number]
             current = preview.getpixel((x, y))
             preview.putpixel(
