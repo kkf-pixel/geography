@@ -80,7 +80,7 @@ export function hitDistrict(xPercent: number, yPercent: number, hitMap: ImageDat
 
   const originX = Math.round((xPercent / 100) * (hitMap.width - 1));
   const originY = Math.round((yPercent / 100) * (hitMap.height - 1));
-  const radius = 20;
+  const radius = 22;
 
   for (let offset = 0; offset <= radius; offset += 1) {
     for (let dy = -offset; dy <= offset; dy += 1) {
