@@ -41,6 +41,8 @@ EXTRA_SEEDS: list[tuple[int, float, float]] = [
     (2, 62, 12),
     (2, 72, 8),
     (3, 70, 28),
+    (10, 57, 64),
+    (11, 60, 60),
     (13, 66, 60),
     (16, 66, 70),
     (16, 72, 69),
@@ -238,7 +240,7 @@ def main() -> None:
         [is_land(pixels[x, y]) or is_barrier(pixels[x, y]) for x in range(width)]
         for y in range(height)
     ]
-    dilate(8, land_or_border)
+    dilate(16, land_or_border)
 
     counts = {number: 0 for number in range(1, 19)}
     hit = Image.new("RGBA", (width, height), (0, 0, 0, 0))
