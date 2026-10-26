@@ -235,12 +235,14 @@ def main() -> None:
             if not changed:
                 break
 
-    # Fill leftover land pockets and the printed outline, but do not spill into the sea.
+    # Fill leftover land pockets and the printed outline.
     land_or_border = [
         [is_land(pixels[x, y]) or is_barrier(pixels[x, y]) for x in range(width)]
         for y in range(height)
     ]
     dilate(16, land_or_border)
+    # Nearby sea counts too — nearest district wins, so the click need not be exact.
+    dilate(40, [[True] * width for _ in range(height)])
 
     counts = {number: 0 for number in range(1, 19)}
     hit = Image.new("RGBA", (width, height), (0, 0, 0, 0))
