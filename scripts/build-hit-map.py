@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-import heapq
+from collections import deque
 from pathlib import Path
 
 from PIL import Image, ImageDraw
@@ -37,9 +37,18 @@ SEEDS: list[tuple[int, float, float]] = [
 
 # Outlying islands that are not connected to the numbered landmass.
 EXTRA_SEEDS: list[tuple[int, float, float]] = [
+    (2, 50, 14),
+    (2, 62, 12),
     (2, 72, 8),
     (3, 70, 28),
+    (13, 66, 60),
+    (16, 66, 70),
+    (16, 72, 69),
+    (17, 58, 82),
     (7, 34, 58),
+    (8, 76, 40),
+    (8, 80, 42),
+    (8, 84, 46),
     (8, 77, 31),
     (8, 90, 42),
     (8, 88, 58),
@@ -51,6 +60,11 @@ EXTRA_SEEDS: list[tuple[int, float, float]] = [
     (18, 48, 78),
     (18, 12, 78),
     (18, 35, 82),
+]
+
+# Extra walls where the JPEG outline has a gap.
+BARRIER_LINES: list[list[tuple[float, float]]] = [
+    [(69.0, 64.0), (70.0, 58.0), (71.0, 52.0), (72.0, 46.0), (73.0, 40.0), (74.0, 36.0)],
 ]
 
 PALETTE = {
@@ -83,9 +97,27 @@ def is_land(rgb: tuple[int, int, int]) -> bool:
     return brightness(rgb) >= 238
 
 
+def is_barrier(rgb: tuple[int, int, int]) -> bool:
+    return brightness(rgb) < 150
+
+
 def is_water(rgb: tuple[int, int, int]) -> bool:
     value = brightness(rgb)
     return 175 <= value <= 230 and max(rgb) - min(rgb) <= 12
+
+
+def dilate_mask(mask: list[list[bool]], width: int, height: int, radius: int) -> list[list[bool]]:
+    out = [row[:] for row in mask]
+    for y in range(height):
+        for x in range(width):
+            if not mask[y][x]:
+                continue
+            for dy in range(-radius, radius + 1):
+                for dx in range(-radius, radius + 1):
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < width and 0 <= ny < height:
+                        out[ny][nx] = True
+    return out
 
 
 def land_neighbors(passable: list[list[bool]], width: int, height: int, x: int, y: int) -> int:
@@ -121,45 +153,62 @@ def find_land(passable: list[list[bool]], width: int, height: int, x: int, y: in
 def main() -> None:
     source = Image.open(SRC).convert("RGB")
     width, height = source.size
-    work = source.copy()
-    draw_src = ImageDraw.Draw(work)
+    pixels = source.load()
+    barriers = dilate_mask(
+        [[is_barrier(pixels[x, y]) for x in range(width)] for y in range(height)],
+        width,
+        height,
+        2,
+    )
+    for line in BARRIER_LINES:
+        points = [(int(px / 100 * width), int(py / 100 * height)) for px, py in line]
+        for (x0, y0), (x1, y1) in zip(points, points[1:]):
+            steps = max(abs(x1 - x0), abs(y1 - y0), 1)
+            for step in range(steps + 1):
+                x = x0 + (x1 - x0) * step // steps
+                y = y0 + (y1 - y0) * step // steps
+                for dy in range(-2, 3):
+                    for dx in range(-2, 3):
+                        nx, ny = x + dx, y + dy
+                        if 0 <= nx < width and 0 <= ny < height:
+                            barriers[ny][nx] = True
+    # Open a small hole on each printed number so the seed can enter the region.
     for _, px, py in SEEDS:
-        x, y = int(px / 100 * width), int(py / 100 * height)
-        draw_src.ellipse((x - 7, y - 7, x + 7, y + 7), fill=(255, 255, 255))
-    pixels = work.load()
-    passable = [[is_land(pixels[x, y]) for x in range(width)] for y in range(height)]
-
-    infinite = 10**9
-    best = [[infinite for _ in range(width)] for _ in range(height)]
+        cx, cy = int(px / 100 * width), int(py / 100 * height)
+        for dy in range(-3, 4):
+            for dx in range(-3, 4):
+                if dx * dx + dy * dy > 9:
+                    continue
+                nx, ny = cx + dx, cy + dy
+                if 0 <= nx < width and 0 <= ny < height:
+                    barriers[ny][nx] = False
+    passable = [
+        [is_land(pixels[x, y]) and not barriers[y][x] for x in range(width)]
+        for y in range(height)
+    ]
     labels = [[0 for _ in range(width)] for _ in range(height)]
-    heap: list[tuple[int, int, int, int]] = []
 
-    def push(number: int, px: float, py: float) -> None:
+    def flood(start: tuple[int, int], number: int) -> int:
+        if labels[start[1]][start[0]]:
+            return 0
+        queue = deque([start])
+        labels[start[1]][start[0]] = number
+        count = 1
+        while queue:
+            x, y = queue.popleft()
+            for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
+                if 0 <= nx < width and 0 <= ny < height and passable[ny][nx] and labels[ny][nx] == 0:
+                    labels[ny][nx] = number
+                    count += 1
+                    queue.append((nx, ny))
+        return count
+
+    for number, px, py in SEEDS + EXTRA_SEEDS:
         start = find_land(passable, width, height, int(px / 100 * width), int(py / 100 * height))
         if start is None:
             print("missing seed", number, px, py)
-            return
-        x, y = start
-        if 0 < best[y][x]:
-            best[y][x] = 0
-            labels[y][x] = number
-            heapq.heappush(heap, (0, number, x, y))
-
-    for number, px, py in SEEDS + EXTRA_SEEDS:
-        push(number, px, py)
-
-    while heap:
-        cost, number, x, y = heapq.heappop(heap)
-        if cost != best[y][x] or labels[y][x] != number:
             continue
-        for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
-            if not (0 <= nx < width and 0 <= ny < height and passable[ny][nx]):
-                continue
-            next_cost = cost + 1
-            if next_cost < best[ny][nx]:
-                best[ny][nx] = next_cost
-                labels[ny][nx] = number
-                heapq.heappush(heap, (next_cost, number, nx, ny))
+        flood(start, number)
 
     neighbors = ((-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1))
 
@@ -184,15 +233,12 @@ def main() -> None:
             if not changed:
                 break
 
-    # Fill holes, printed numbers, and the outline so the whole enclosed region hits.
-    fillable = [[not is_water(pixels[x, y]) for x in range(width)] for y in range(height)]
-    dilate(28, fillable)
-    # A short extra grow over the black border only, not the open sea.
-    border_only = [
-        [fillable[y][x] or (brightness(pixels[x, y]) < 175) for x in range(width)]
+    # Fill leftover land pockets and the printed outline, but do not spill into the sea.
+    land_or_border = [
+        [is_land(pixels[x, y]) or is_barrier(pixels[x, y]) for x in range(width)]
         for y in range(height)
     ]
-    dilate(4, border_only)
+    dilate(8, land_or_border)
 
     counts = {number: 0 for number in range(1, 19)}
     hit = Image.new("RGBA", (width, height), (0, 0, 0, 0))
