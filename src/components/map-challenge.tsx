@@ -84,23 +84,12 @@ export function MapChallenge() {
     }
 
     const rect = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.height) * 100;
-    const chosen = hitDistrict(x, y);
-    const isCorrect = chosen.id === currentDistrict.id;
-    const feedback: Feedback = {
-      id: Date.now() + Math.floor(Math.random() * 1000),
-      x,
-      y,
-      isCorrect,
-    };
+    const clickX = ((event.clientX - rect.left) / rect.width) * 100;
+    const clickY = ((event.clientY - rect.top) / rect.height) * 100;
+    const clickedDistrict = hitDistrict(clickX, clickY);
 
-    setFeedbacks((previous) => [...previous, feedback]);
-    window.setTimeout(() => {
-      setFeedbacks((previous) => previous.filter((item) => item.id !== feedback.id));
-    }, 500);
-
-    if (isCorrect) {
+    if (clickedDistrict && clickedDistrict.id === currentDistrict.id) {
+      showFeedback(clickX, clickY, true);
       setScore((previous) => previous + 10);
       const remaining = queue.slice(1);
       setQueue(remaining);
@@ -108,6 +97,24 @@ export function MapChallenge() {
       return;
     }
 
+    showFeedback(clickX, clickY, false);
+    handleWrongClick();
+  }
+
+  function showFeedback(x: number, y: number, isCorrect: boolean) {
+    const feedback: Feedback = {
+      id: Date.now() + Math.floor(Math.random() * 1000),
+      x,
+      y,
+      isCorrect,
+    };
+    setFeedbacks((previous) => [...previous, feedback]);
+    window.setTimeout(() => {
+      setFeedbacks((previous) => previous.filter((item) => item.id !== feedback.id));
+    }, 500);
+  }
+
+  function handleWrongClick() {
     setScore((previous) => Math.max(0, previous - 2));
     setMistakes((previous) => previous + 1);
   }
@@ -202,7 +209,7 @@ export function MapChallenge() {
             <img
               src={QUESTION_MAP_SRC}
               alt="香港18區無字地圖"
-              className="map-image w-full cursor-crosshair select-none"
+              className="block h-auto w-full cursor-crosshair drop-shadow-md"
               draggable={false}
               onClick={handleMapClick}
             />

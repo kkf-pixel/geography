@@ -182,6 +182,8 @@ export const DISTRICTS: District[] = [
   },
 ];
 
+export const HIT_TOLERANCE = 6;
+
 export function shuffleDistricts(districts: District[] = DISTRICTS): District[] {
   const next = [...districts];
   for (let index = next.length - 1; index > 0; index -= 1) {
@@ -191,28 +193,17 @@ export function shuffleDistricts(districts: District[] = DISTRICTS): District[] 
   return next;
 }
 
-function distanceTo(district: District, x: number, y: number) {
-  return Math.hypot(x - district.x, y - district.y);
-}
+export function hitDistrict(x: number, y: number): District | null {
+  let clickedDistrict: District | null = null;
+  let minDistance = Infinity;
 
-function contains(district: District, x: number, y: number) {
-  const { left, top, right, bottom } = district.area;
-  return x >= left && x <= right && y >= top && y <= bottom;
-}
-
-function closestDistrict(districts: District[], x: number, y: number) {
-  return districts.reduce((best, district) => {
-    if (distanceTo(district, x, y) < distanceTo(best, x, y)) {
-      return district;
+  DISTRICTS.forEach((district) => {
+    const distance = Math.hypot(x - district.x, y - district.y);
+    if (distance < minDistance && distance <= HIT_TOLERANCE) {
+      minDistance = distance;
+      clickedDistrict = district;
     }
-    return best;
   });
-}
 
-export function hitDistrict(x: number, y: number): District {
-  const inside = DISTRICTS.filter((district) => contains(district, x, y));
-  if (inside.length > 0) {
-    return closestDistrict(inside, x, y);
-  }
-  return closestDistrict(DISTRICTS, x, y);
+  return clickedDistrict;
 }
