@@ -13,7 +13,9 @@ export type District = {
   };
 };
 
-export const QUESTION_MAP_SRC = "/maps/hk-18-question.jpg";
+import { withBasePath } from "@/lib/base-path";
+
+export const QUESTION_MAP_SRC = withBasePath("/maps/hk-18-question.jpg");
 
 export const DISTRICTS: District[] = [
   {

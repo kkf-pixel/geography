@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { ClientRedirect } from "@/components/client-redirect";
 
 export default function HousingIndustryRedirect() {
-  redirect("/s1");
+  return <ClientRedirect href="/s1" />;
 }
