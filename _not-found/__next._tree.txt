@@ -1,5 +1,5 @@
 :HL["/geography/_next/static/chunks/1p0u_xa5pf3mw.css","style"]
-:HL["/geography/_next/static/chunks/2r54dl81z76dd.css","style"]
+:HL["/geography/_next/static/chunks/23v7zardkmdcy.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":"/_not-found","h":96,"c":"$Q2"}]]
-0:{"b":"e0Sx7d2ihru6QwAYkoPgW","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"X0Ck7z6j7APg8gPyZb4U1","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
