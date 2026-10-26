@@ -161,43 +161,38 @@ def main() -> None:
                 labels[ny][nx] = number
                 heapq.heappush(heap, (next_cost, number, nx, ny))
 
-    leftover_points: list[tuple[int, int]] = []
-    for y in range(height):
-        for x in range(width):
-            if labels[y][x] == 0 and passable[y][x]:
-                leftover_points.append((x, y))
+    neighbors = ((-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1))
 
-    labelled_points = [
-        (x, y, labels[y][x])
-        for y in range(0, height, 2)
-        for x in range(0, width, 2)
-        if labels[y][x]
+    def dilate(steps: int, allowed: list[list[bool]]) -> None:
+        nonlocal labels
+        for _ in range(steps):
+            nxt = [row[:] for row in labels]
+            changed = False
+            for y in range(height):
+                for x in range(width):
+                    if labels[y][x] or not allowed[y][x]:
+                        continue
+                    votes = [
+                        labels[y + dy][x + dx]
+                        for dx, dy in neighbors
+                        if 0 <= x + dx < width and 0 <= y + dy < height and labels[y + dy][x + dx]
+                    ]
+                    if votes:
+                        nxt[y][x] = max(set(votes), key=votes.count)
+                        changed = True
+            labels = nxt
+            if not changed:
+                break
+
+    # Fill holes, printed numbers, and the outline so the whole enclosed region hits.
+    fillable = [[not is_water(pixels[x, y]) for x in range(width)] for y in range(height)]
+    dilate(28, fillable)
+    # A short extra grow over the black border only, not the open sea.
+    border_only = [
+        [fillable[y][x] or (brightness(pixels[x, y]) < 175) for x in range(width)]
+        for y in range(height)
     ]
-    for x, y in leftover_points:
-        nearest_number = 0
-        nearest_dist = 70 ** 2
-        for lx, ly, number in labelled_points:
-            dist = (x - lx) ** 2 + (y - ly) ** 2
-            if dist < nearest_dist:
-                nearest_dist = dist
-                nearest_number = number
-        if nearest_number:
-            labels[y][x] = nearest_number
-
-    # Clicking the printed outline should still count: grow each region into nearby non-water.
-    grown = [row[:] for row in labels]
-    for y in range(height):
-        for x in range(width):
-            if labels[y][x] or is_water(pixels[x, y]):
-                continue
-            nearby = [
-                labels[ny][nx]
-                for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1), (x - 1, y - 1), (x + 1, y - 1), (x - 1, y + 1), (x + 1, y + 1))
-                if 0 <= nx < width and 0 <= ny < height and labels[ny][nx]
-            ]
-            if nearby:
-                grown[y][x] = max(set(nearby), key=nearby.count)
-    labels = grown
+    dilate(4, border_only)
 
     counts = {number: 0 for number in range(1, 19)}
     hit = Image.new("RGBA", (width, height), (0, 0, 0, 0))
