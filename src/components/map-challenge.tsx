@@ -1,298 +1,171 @@
 "use client";
 
-import { Lightbulb, MapPinned, RotateCcw, Trophy, X } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
-import { HintMapImage } from "@/components/hint-map-image";
+import { Lightbulb, MapPinned } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import {
   DISTRICTS,
+  HINT_MAP_SRC,
   QUESTION_MAP_SRC,
-  hitDistrict,
-  shuffleDistricts,
   type District,
 } from "@/lib/hk-districts";
 
-type GameState = "start" | "playing" | "end";
-
-type Feedback = {
+type FeedbackNode = {
   id: number;
-  x: number;
-  y: number;
-  isCorrect: boolean;
+  status: "correct" | "wrong";
 };
 
-function scoreMessage(score: number) {
-  if (score >= 150) {
-    return "太神啦！你簡直是香港地理活字典！";
-  }
-  if (score >= 100) {
-    return "做得不錯！你對香港已經很熟悉了！";
-  }
-  return "還要再多練習哦，下次一定會更好！";
-}
-
 export function MapChallenge() {
-  const [gameState, setGameState] = useState<GameState>("start");
-  const [queue, setQueue] = useState<District[]>([]);
-  const [currentDistrict, setCurrentDistrict] = useState<District | null>(null);
+  const [targetDistrict, setTargetDistrict] = useState<District | null>(null);
   const [score, setScore] = useState(0);
-  const [mistakes, setMistakes] = useState(0);
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [message, setMessage] = useState("點擊「開始遊戲」找出香港18區！");
   const [showHint, setShowHint] = useState(false);
-  const [hintUsedForCurrent, setHintUsedForCurrent] = useState(false);
-  const imageRef = useRef<HTMLImageElement>(null);
-  const titleId = useId();
+  const [feedbackNode, setFeedbackNode] = useState<FeedbackNode | null>(null);
+  const nextRoundTimer = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!showHint) {
-      return;
-    }
-
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setShowHint(false);
+    return () => {
+      if (nextRoundTimer.current !== null) {
+        window.clearTimeout(nextRoundTimer.current);
       }
-    }
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [showHint]);
-
-  function startGame() {
-    const shuffled = shuffleDistricts();
-    setQueue(shuffled);
-    setCurrentDistrict(shuffled[0] ?? null);
-    setScore(0);
-    setMistakes(0);
-    setFeedbacks([]);
-    setHintUsedForCurrent(false);
-    setShowHint(false);
-    setGameState("playing");
-  }
-
-  function nextQuestion(remaining: District[]) {
-    setHintUsedForCurrent(false);
-    if (remaining.length > 0) {
-      setCurrentDistrict(remaining[0]);
-      return;
-    }
-    setCurrentDistrict(null);
-    setGameState("end");
-  }
-
-  function handleMapClick(event: React.MouseEvent<HTMLDivElement>) {
-    if (gameState !== "playing" || !currentDistrict || !imageRef.current) {
-      return;
-    }
-
-    const rect = imageRef.current.getBoundingClientRect();
-    const clickX = ((event.clientX - rect.left) / rect.width) * 100;
-    const clickY = ((event.clientY - rect.top) / rect.height) * 100;
-    const clickedDistrict = hitDistrict(clickX, clickY);
-    const isCorrect = clickedDistrict?.id === currentDistrict.id;
-    const feedback: Feedback = {
-      id: Date.now(),
-      x: clickX,
-      y: clickY,
-      isCorrect,
     };
+  }, []);
 
-    setFeedbacks((previous) => [...previous, feedback]);
-    window.setTimeout(() => {
-      setFeedbacks((previous) => previous.filter((item) => item.id !== feedback.id));
-    }, 500);
+  function startNewRound() {
+    if (nextRoundTimer.current !== null) {
+      window.clearTimeout(nextRoundTimer.current);
+      nextRoundTimer.current = null;
+    }
 
-    if (clickedDistrict && isCorrect) {
-      setScore((previous) => previous + 10);
-      const remaining = queue.slice(1);
-      setQueue(remaining);
-      nextQuestion(remaining);
+    const randomDistrict =
+      DISTRICTS[Math.floor(Math.random() * DISTRICTS.length)] ?? null;
+    setTargetDistrict(randomDistrict);
+    setMessage(randomDistrict ? `請找出：${randomDistrict.name}` : message);
+    setShowHint(false);
+    setFeedbackNode(null);
+  }
+
+  function handleDistrictClick(district: District) {
+    if (!targetDistrict || feedbackNode?.status === "correct") {
       return;
     }
 
-    setScore((previous) => Math.max(0, previous - 2));
-    setMistakes((previous) => previous + 1);
+    if (district.id === targetDistrict.id) {
+      setFeedbackNode({ id: district.id, status: "correct" });
+      setScore((previous) => previous + 10);
+      setMessage(`答對了！那是 ${district.name}。`);
+      nextRoundTimer.current = window.setTimeout(() => {
+        startNewRound();
+      }, 1500);
+      return;
+    }
+
+    setFeedbackNode({ id: district.id, status: "wrong" });
+    setScore((previous) => previous - 5);
+    setMessage(`答錯了，你點擊的是 ${district.name}。請再試一次！`);
   }
 
-  function handleUseHint() {
-    if (!hintUsedForCurrent) {
-      setScore((previous) => Math.max(0, previous - 3));
-      setHintUsedForCurrent(true);
+  function useHint() {
+    if (showHint || !targetDistrict) {
+      return;
     }
+    if (score < 3) {
+      setMessage("分數不足，無法使用提示（需要 3 分）");
+      return;
+    }
+    setScore((previous) => previous - 3);
     setShowHint(true);
+    setMessage("提示已開啟（扣除 3 分）！");
   }
+
+  const bannerTone =
+    feedbackNode?.status === "correct"
+      ? "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-200"
+      : feedbackNode?.status === "wrong"
+        ? "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-200"
+        : "border-2 border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200";
 
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white/90 p-5 sm:p-8 dark:border-slate-700 dark:bg-slate-900/90">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <section className="w-full rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-xl sm:p-6 dark:border-slate-700 dark:bg-slate-900">
+      <div className="mb-6 flex flex-col items-center justify-between gap-4 md:flex-row">
         <div>
           <p className="font-display text-xs font-semibold tracking-[0.18em] text-orange-600 dark:text-orange-300">
             MAP CHALLENGE
           </p>
-          <h2 className="mt-1 text-2xl font-bold tracking-tight">
-            香港18區尋寶大挑戰
+          <h2 className="mt-1 flex items-center gap-2 text-2xl font-bold text-slate-800 md:text-3xl dark:text-slate-50">
+            <MapPinned className="size-6 text-orange-500" aria-hidden="true" />
+            香港18區尋寶
           </h2>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-            中學地理溫習小遊戲：測試你對香港行政分區的認識。
-          </p>
         </div>
-        <span className="inline-flex min-h-10 items-center gap-2 self-start rounded-full bg-blue-50 px-3 text-sm font-bold text-blue-800 dark:bg-blue-500/15 dark:text-sky-200">
-          <MapPinned className="size-4" aria-hidden="true" />
-          遊戲一 · 18 區
-        </span>
+        <div className="flex gap-3">
+          <div className="rounded-full bg-yellow-400 px-6 py-2 text-lg font-bold text-yellow-900 shadow-md">
+            分數: {score}
+          </div>
+          <button
+            type="button"
+            onClick={startNewRound}
+            className="press rounded-full bg-blue-600 px-6 py-2 font-bold text-white shadow-md hover:bg-blue-500"
+          >
+            {targetDistrict ? "跳過此題" : "開始遊戲"}
+          </button>
+        </div>
       </div>
 
-      {gameState === "start" ? (
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-6 dark:border-slate-700 dark:bg-slate-950/60">
-          <h3 className="text-lg font-bold">準備好了嗎？</h3>
-          <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-            <li>系統會隨機顯示 18 區名稱。</li>
-            <li>請在下方無字地圖中點擊正確位置。</li>
-            <li>點對加 10 分，點錯扣 2 分。</li>
-            <li>忘記了可使用「提示圖」，但每次扣 3 分！</li>
-          </ol>
-          <button
-            type="button"
-            onClick={startGame}
-            className="press mt-6 inline-flex min-h-12 items-center justify-center rounded-full bg-slate-900 px-6 text-sm font-bold text-white dark:bg-white dark:text-slate-950"
-          >
-            開始遊戲
-          </button>
-        </div>
-      ) : null}
+      <div
+        className={`mb-6 rounded-xl p-4 text-center text-xl font-bold ${bannerTone}`}
+        aria-live="polite"
+      >
+        {message}
+      </div>
 
-      {gameState === "playing" && currentDistrict ? (
-        <div className="mt-6">
-          <div className="flex flex-col gap-3 rounded-2xl border-l-4 border-orange-500 bg-slate-50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between dark:bg-slate-950/60">
-            <p className="text-sm font-bold text-slate-600 dark:text-slate-300">
-              剩餘：
-              <span className="ml-1 text-blue-700 dark:text-sky-300">{queue.length}</span>
-              區
-            </p>
-            <p
-              className="text-center text-lg font-extrabold text-slate-900 dark:text-slate-50"
-              aria-live="polite"
-            >
-              請找出：
-              <span className="ml-2 text-blue-700 dark:text-sky-300">
-                {currentDistrict.name}
-              </span>
-            </p>
-            <p className="text-sm font-bold text-slate-600 dark:text-slate-300">
-              分數：
-              <span className="ml-1 text-orange-600 dark:text-orange-300">{score}</span>
-            </p>
-          </div>
+      <div className="mb-4 flex justify-center">
+        <button
+          type="button"
+          onClick={useHint}
+          disabled={!targetDistrict || showHint}
+          className="press inline-flex items-center gap-2 rounded-lg bg-purple-100 px-6 py-2 font-semibold text-purple-700 transition-colors hover:bg-purple-200 disabled:opacity-50 dark:bg-purple-500/20 dark:text-purple-200 dark:hover:bg-purple-500/30"
+        >
+          <Lightbulb className="size-4" aria-hidden="true" />
+          顯示地圖提示（-3 分）
+        </button>
+      </div>
 
-          <div className="mt-4 flex flex-wrap items-center gap-3">
+      <div className="relative w-full overflow-hidden rounded-xl border-4 border-slate-300 bg-white dark:border-slate-600">
+        <img
+          src={showHint ? HINT_MAP_SRC : QUESTION_MAP_SRC}
+          alt="香港18區地圖"
+          className="block h-auto w-full select-none"
+          draggable={false}
+        />
+        {DISTRICTS.map((district) => {
+          const isCorrect =
+            feedbackNode?.id === district.id && feedbackNode.status === "correct";
+          const isWrong =
+            feedbackNode?.id === district.id && feedbackNode.status === "wrong";
+          return (
             <button
+              key={district.id}
               type="button"
-              onClick={handleUseHint}
-              className="press inline-flex min-h-11 items-center gap-2 rounded-full bg-orange-500 px-5 text-sm font-bold text-slate-950"
-            >
-              <Lightbulb className="size-4" aria-hidden="true" />
-              偷看提示圖（扣 3 分）
-            </button>
-            {hintUsedForCurrent ? (
-              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                本題已使用提示
-              </p>
-            ) : null}
-          </div>
-
-          <div
-            className="map-container mt-4 cursor-crosshair rounded-2xl border-8 border-white shadow-2xl dark:border-slate-800"
-            onClick={handleMapClick}
-          >
-            <img
-              ref={imageRef}
-              src={QUESTION_MAP_SRC}
-              alt="香港18區無字地圖"
-              className="map-image block h-auto w-full cursor-crosshair drop-shadow-md"
-              draggable={false}
+              onClick={() => handleDistrictClick(district)}
+              className={`absolute z-10 flex size-8 -mt-4 -ml-4 cursor-pointer items-center justify-center rounded-full text-transparent transition-all duration-200 hover:border-2 hover:border-blue-500 hover:bg-blue-400/40 md:size-12 md:-mt-6 md:-ml-6 ${
+                isCorrect
+                  ? "border-4 border-green-600 bg-green-500/60 shadow-[0_0_15px_rgba(34,197,94,0.8)]"
+                  : ""
+              } ${
+                isWrong
+                  ? "animate-bounce border-4 border-red-600 bg-red-500/60"
+                  : ""
+              }`}
+              style={{ top: district.top, left: district.left }}
+              title={district.name}
+              aria-label={district.name}
             />
-            {feedbacks.map((feedback) => (
-              <div
-                key={feedback.id}
-                className="click-feedback"
-                style={{
-                  left: `${feedback.x}%`,
-                  top: `${feedback.y}%`,
-                  backgroundColor: feedback.isCorrect ? "#10b981" : "#ef4444",
-                }}
-              >
-                {feedback.isCorrect ? "✓" : "✗"}
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
+          );
+        })}
+      </div>
 
-      {gameState === "end" ? (
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center dark:border-slate-700 dark:bg-slate-950/60">
-          <Trophy className="mx-auto size-10 text-orange-500" aria-hidden="true" />
-          <h3 className="mt-3 text-2xl font-bold">挑戰完成！</h3>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-            你已經找出了全部 {DISTRICTS.length} 個行政區
-          </p>
-          <div className="mt-6 flex items-center justify-center gap-8">
-            <div>
-              <p className="text-xs text-slate-500">最終分數</p>
-              <p className="text-5xl font-black text-orange-500">{score}</p>
-            </div>
-            <div className="h-16 w-px bg-slate-200 dark:bg-slate-700" />
-            <div>
-              <p className="text-xs text-slate-500">錯誤次數</p>
-              <p className="text-3xl font-bold text-red-500">{mistakes}</p>
-            </div>
-          </div>
-          <p className="mt-6 font-medium text-slate-700 dark:text-slate-200">
-            {scoreMessage(score)}
-          </p>
-          <button
-            type="button"
-            onClick={startGame}
-            className="press mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-slate-900 px-6 text-sm font-bold text-white dark:bg-white dark:text-slate-950"
-          >
-            <RotateCcw className="size-4" aria-hidden="true" />
-            再玩一次
-          </button>
-        </div>
-      ) : null}
-
-      {showHint ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4">
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={titleId}
-            className="relative max-h-[90vh] w-full max-w-4xl overflow-auto rounded-3xl bg-white p-4 sm:p-6 dark:bg-slate-900"
-          >
-            <button
-              type="button"
-              onClick={() => setShowHint(false)}
-              className="press absolute top-3 right-3 grid size-11 place-items-center rounded-full text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
-            >
-              <X className="size-5" aria-hidden="true" />
-              <span className="sr-only">關閉提示</span>
-            </button>
-            <h3 id={titleId} className="pr-12 text-xl font-bold">
-              香港18區提示圖
-            </h3>
-            <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-[#e8f4ff] dark:border-slate-700">
-              <HintMapImage />
-            </div>
-            <div className="mt-4 text-center">
-              <button
-                type="button"
-                onClick={() => setShowHint(false)}
-                className="press inline-flex min-h-11 items-center rounded-full bg-orange-500 px-6 text-sm font-bold text-slate-950"
-              >
-                我記住了，繼續挑戰
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <p className="mt-4 text-center text-sm text-slate-400">
+        遊戲說明：根據上方提示，在地圖上點擊正確的數字區域。
+      </p>
     </section>
   );
 }
