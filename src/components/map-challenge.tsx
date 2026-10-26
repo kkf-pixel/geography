@@ -7,6 +7,7 @@ import {
   DISTRICTS,
   QUESTION_MAP_SRC,
   hitDistrict,
+  loadHitMap,
   shuffleDistricts,
   type District,
 } from "@/lib/hk-districts";
@@ -40,7 +41,26 @@ export function MapChallenge() {
   const [showHint, setShowHint] = useState(false);
   const [hintUsedForCurrent, setHintUsedForCurrent] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
+  const hitMapRef = useRef<ImageData | null>(null);
   const titleId = useId();
+
+  useEffect(() => {
+    let cancelled = false;
+    loadHitMap()
+      .then((hitMap) => {
+        if (!cancelled) {
+          hitMapRef.current = hitMap;
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          hitMapRef.current = null;
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!showHint) {
@@ -87,7 +107,7 @@ export function MapChallenge() {
     const rect = imageRef.current.getBoundingClientRect();
     const clickX = ((event.clientX - rect.left) / rect.width) * 100;
     const clickY = ((event.clientY - rect.top) / rect.height) * 100;
-    const clickedDistrict = hitDistrict(clickX, clickY);
+    const clickedDistrict = hitDistrict(clickX, clickY, hitMapRef.current);
     const isCorrect = clickedDistrict?.id === currentDistrict.id;
     const feedback: Feedback = {
       id: Date.now(),
