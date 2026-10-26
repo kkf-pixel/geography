@@ -6,7 +6,7 @@ import { HintMapImage } from "@/components/hint-map-image";
 import {
   DISTRICTS,
   QUESTION_MAP_SRC,
-  isCurrentDistrictHit,
+  hitDistrict,
   shuffleDistricts,
   type District,
 } from "@/lib/hk-districts";
@@ -85,13 +85,14 @@ export function MapChallenge() {
     }
 
     const rect = imageRef.current.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.height) * 100;
-    const isCorrect = isCurrentDistrictHit(currentDistrict, x, y);
+    const clickX = ((event.clientX - rect.left) / rect.width) * 100;
+    const clickY = ((event.clientY - rect.top) / rect.height) * 100;
+    const clickedDistrict = hitDistrict(clickX, clickY);
+    const isCorrect = clickedDistrict?.id === currentDistrict.id;
     const feedback: Feedback = {
       id: Date.now(),
-      x,
-      y,
+      x: clickX,
+      y: clickY,
       isCorrect,
     };
 
@@ -100,7 +101,7 @@ export function MapChallenge() {
       setFeedbacks((previous) => previous.filter((item) => item.id !== feedback.id));
     }, 500);
 
-    if (isCorrect) {
+    if (clickedDistrict && isCorrect) {
       setScore((previous) => previous + 10);
       const remaining = queue.slice(1);
       setQueue(remaining);
@@ -206,7 +207,7 @@ export function MapChallenge() {
               ref={imageRef}
               src={QUESTION_MAP_SRC}
               alt="香港18區無字地圖"
-              className="map-image"
+              className="map-image block h-auto w-full cursor-crosshair drop-shadow-md"
               draggable={false}
             />
             {feedbacks.map((feedback) => (

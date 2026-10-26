@@ -11,7 +11,7 @@ export type District = {
 
 export const QUESTION_MAP_SRC = withBasePath("/maps/hk-18-question.jpg");
 
-export const HIT_TOLERANCE = 4.5;
+export const HIT_TOLERANCE = 6;
 
 export const DISTRICTS: District[] = [
   { id: "yuen_long", name: "元朗區 (Yuen Long)", shortName: "元朗區", number: 1, x: 30, y: 28 },
@@ -41,6 +41,21 @@ export function shuffleDistricts(districts: District[] = DISTRICTS): District[] 
     [next[index], next[swapIndex]] = [next[swapIndex], next[index]];
   }
   return next;
+}
+
+export function hitDistrict(x: number, y: number): District | null {
+  let clickedDistrict: District | null = null;
+  let minDistance = Infinity;
+
+  DISTRICTS.forEach((district) => {
+    const distance = Math.hypot(x - district.x, y - district.y);
+    if (distance < minDistance && distance <= HIT_TOLERANCE) {
+      minDistance = distance;
+      clickedDistrict = district;
+    }
+  });
+
+  return clickedDistrict;
 }
 
 export function isCurrentDistrictHit(district: District, x: number, y: number): boolean {
