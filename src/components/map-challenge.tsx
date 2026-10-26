@@ -1,12 +1,12 @@
 "use client";
 
 import { Lightbulb, MapPinned, RotateCcw, Trophy, X } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { HintMapImage } from "@/components/hint-map-image";
 import {
   DISTRICTS,
   QUESTION_MAP_SRC,
-  hitDistrict,
+  isCurrentDistrictHit,
   shuffleDistricts,
   type District,
 } from "@/lib/hk-districts";
@@ -22,7 +22,7 @@ type Feedback = {
 
 function scoreMessage(score: number) {
   if (score >= 150) {
-    return "太厲害了！你簡直是香港地理專家！";
+    return "太神啦！你簡直是香港地理活字典！";
   }
   if (score >= 100) {
     return "做得不錯！你對香港已經很熟悉了！";
@@ -39,6 +39,7 @@ export function MapChallenge() {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [showHint, setShowHint] = useState(false);
   const [hintUsedForCurrent, setHintUsedForCurrent] = useState(false);
+  const imageRef = useRef<HTMLImageElement>(null);
   const titleId = useId();
 
   useEffect(() => {
@@ -78,18 +79,28 @@ export function MapChallenge() {
     setGameState("end");
   }
 
-  function handleMapClick(event: React.MouseEvent<HTMLImageElement>) {
-    if (gameState !== "playing" || !currentDistrict) {
+  function handleMapClick(event: React.MouseEvent<HTMLDivElement>) {
+    if (gameState !== "playing" || !currentDistrict || !imageRef.current) {
       return;
     }
 
-    const rect = event.currentTarget.getBoundingClientRect();
-    const clickX = ((event.clientX - rect.left) / rect.width) * 100;
-    const clickY = ((event.clientY - rect.top) / rect.height) * 100;
-    const clickedDistrict = hitDistrict(clickX, clickY);
+    const rect = imageRef.current.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    const isCorrect = isCurrentDistrictHit(currentDistrict, x, y);
+    const feedback: Feedback = {
+      id: Date.now(),
+      x,
+      y,
+      isCorrect,
+    };
 
-    if (clickedDistrict && clickedDistrict.id === currentDistrict.id) {
-      showFeedback(clickX, clickY, true);
+    setFeedbacks((previous) => [...previous, feedback]);
+    window.setTimeout(() => {
+      setFeedbacks((previous) => previous.filter((item) => item.id !== feedback.id));
+    }, 500);
+
+    if (isCorrect) {
       setScore((previous) => previous + 10);
       const remaining = queue.slice(1);
       setQueue(remaining);
@@ -97,24 +108,6 @@ export function MapChallenge() {
       return;
     }
 
-    showFeedback(clickX, clickY, false);
-    handleWrongClick();
-  }
-
-  function showFeedback(x: number, y: number, isCorrect: boolean) {
-    const feedback: Feedback = {
-      id: Date.now() + Math.floor(Math.random() * 1000),
-      x,
-      y,
-      isCorrect,
-    };
-    setFeedbacks((previous) => [...previous, feedback]);
-    window.setTimeout(() => {
-      setFeedbacks((previous) => previous.filter((item) => item.id !== feedback.id));
-    }, 500);
-  }
-
-  function handleWrongClick() {
     setScore((previous) => Math.max(0, previous - 2));
     setMistakes((previous) => previous + 1);
   }
@@ -151,10 +144,10 @@ export function MapChallenge() {
         <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-6 dark:border-slate-700 dark:bg-slate-950/60">
           <h3 className="text-lg font-bold">準備好了嗎？</h3>
           <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-            <li>系統會顯示目標地區的名稱。</li>
-            <li>請在下方無字地圖中，點擊對應的數字區域。</li>
+            <li>系統會隨機顯示 18 區名稱。</li>
+            <li>請在下方無字地圖中點擊正確位置。</li>
             <li>點對加 10 分，點錯扣 2 分。</li>
-            <li>忘記了？可以使用「提示」查看彩色地圖，但每次會扣 3 分！</li>
+            <li>忘記了可使用「提示圖」，但每次扣 3 分！</li>
           </ol>
           <button
             type="button"
@@ -196,7 +189,7 @@ export function MapChallenge() {
               className="press inline-flex min-h-11 items-center gap-2 rounded-full bg-orange-500 px-5 text-sm font-bold text-slate-950"
             >
               <Lightbulb className="size-4" aria-hidden="true" />
-              提示（查看彩色地圖）
+              偷看提示圖（扣 3 分）
             </button>
             {hintUsedForCurrent ? (
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
@@ -205,13 +198,16 @@ export function MapChallenge() {
             ) : null}
           </div>
 
-          <div className="map-container relative mt-4 overflow-hidden rounded-2xl border-4 border-white shadow-[0_16px_36px_-22px_rgb(15_23_42_/_0.55)] dark:border-slate-800">
+          <div
+            className="map-container mt-4 cursor-crosshair rounded-2xl border-8 border-white shadow-2xl dark:border-slate-800"
+            onClick={handleMapClick}
+          >
             <img
+              ref={imageRef}
               src={QUESTION_MAP_SRC}
               alt="香港18區無字地圖"
-              className="block h-auto w-full cursor-crosshair drop-shadow-md"
+              className="map-image"
               draggable={false}
-              onClick={handleMapClick}
             />
             {feedbacks.map((feedback) => (
               <div
@@ -220,9 +216,7 @@ export function MapChallenge() {
                 style={{
                   left: `${feedback.x}%`,
                   top: `${feedback.y}%`,
-                  backgroundColor: feedback.isCorrect
-                    ? "rgba(34, 197, 94, 0.9)"
-                    : "rgba(239, 68, 68, 0.9)",
+                  backgroundColor: feedback.isCorrect ? "#10b981" : "#ef4444",
                 }}
               >
                 {feedback.isCorrect ? "✓" : "✗"}
@@ -292,7 +286,7 @@ export function MapChallenge() {
                 onClick={() => setShowHint(false)}
                 className="press inline-flex min-h-11 items-center rounded-full bg-orange-500 px-6 text-sm font-bold text-slate-950"
               >
-                繼續挑戰
+                我記住了，繼續挑戰
               </button>
             </div>
           </div>

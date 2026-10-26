@@ -1,7 +1,7 @@
 :HL["/geography/_next/static/chunks/1p0u_xa5pf3mw.css","style"]
-:HL["/geography/_next/static/chunks/3nm6w08yttkaw.css","style"]
+:HL["/geography/_next/static/chunks/0xbd9ocmyng32.css","style"]
 :HL["/geography/_next/static/media/1b99372b3eaef0c8-s.p.1gsd1jahc5dg_.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":"map-challenge","h":96,"c":"$Q3"}]]
 1:[["children",{"s":"s1","h":96,"c":"$Q2"}]]
-0:{"b":"Aijn8KcqPIi0OCAeFZrXW","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"dfKqDdrP6S8Tg5G5C1q-X","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

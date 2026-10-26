@@ -143,21 +143,33 @@ body {
 }
 
 .map-container {
-  background-color: #d0d0d0;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  background-color: #ccecf7;
+}
+
+.map-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .click-feedback {
   position: absolute;
+  z-index: 10;
   display: flex;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   transform: translate(-50%, -50%);
   align-items: center;
   justify-content: center;
-  border: 2px solid white;
+  border: 3px solid white;
   border-radius: 50%;
   color: white;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   pointer-events: none;
   animation: pop 0.5s ease-out forwards;
