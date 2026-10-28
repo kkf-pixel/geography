@@ -35,3 +35,8 @@ npm run dev
    按「開始遊戲」進入 `/s1/map-challenge`。
 2. **地理溫習衝鋒隊**  
    按「開始遊戲」開啟 [geoquiz-euszfnjo.manus.game](https://geoquiz-euszfnjo.manus.game)。
+
+中二頁同樣只列出入口按鈕：
+
+3. **雲階問答塔**  
+   按「開始遊戲」開啟 [skyquiz-jmhexs5j.manus.game](https://skyquiz-jmhexs5j.manus.game)。

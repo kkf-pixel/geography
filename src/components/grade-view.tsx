@@ -2,6 +2,7 @@ import type { Grade } from "@/lib/curriculum";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Container } from "@/components/container";
 import { MapGameLink } from "@/components/map-game-link";
+import { SkyQuizLink } from "@/components/sky-quiz-link";
 import { SquadGameLink } from "@/components/squad-game-link";
 
 export function GradeView({ grade }: { grade: Grade }) {
@@ -66,12 +67,15 @@ export function GradeView({ grade }: { grade: Grade }) {
           <SquadGameLink />
         </div>
       ) : (
-        <section className="mt-8 rounded-3xl border border-dashed border-slate-300 bg-white/80 p-6 sm:p-8 dark:border-slate-600 dark:bg-slate-900/80">
-          <h2 className="text-lg font-bold">溫習內容</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base dark:text-slate-300">
-            單元一至三已合在這一頁。筆記與練習會在之後加入。
-          </p>
-        </section>
+        <div className="mt-8 space-y-8">
+          <div>
+            <h2 className="text-lg font-bold">溫習遊戲</h2>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+              單元一至三共用一個遊戲：按掣開啟雲階問答塔。
+            </p>
+          </div>
+          <SkyQuizLink />
+        </div>
       )}
     </Container>
   );
