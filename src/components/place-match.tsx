@@ -65,7 +65,9 @@ export function PlaceMatch() {
   const [wrongIds, setWrongIds] = useState<Set<string>>(new Set());
   const [flashToken, setFlashToken] = useState(0);
   const [mistakes, setMistakes] = useState(0);
-  const [notice, setNotice] = useState("把國家名稱拖到地圖上的數字，或先點名稱再點數字。");
+  const [notice, setNotice] = useState(
+    "把國家名稱拖到數字上，放下就會立刻顯示對錯。",
+  );
 
   const placedCount = INDUSTRIAL_PLACES.filter((place) => placements[place.id]).length;
   const correctCount = locked.size;
@@ -76,9 +78,11 @@ export function PlaceMatch() {
   const trayIds = order.filter((id) => !placedIds.has(id));
 
   function placeCountry(countryId: string, placeId: string) {
-    if (locked.has(placeId)) {
+    if (locked.has(placeId) || placements[placeId] === countryId) {
       return;
     }
+    const correct = countryId === placeId;
+    const name = findPlace(countryId)?.name ?? "名稱";
     setPlacements((current) => {
       const next = { ...current };
       for (const id of Object.keys(next)) {
@@ -89,8 +93,32 @@ export function PlaceMatch() {
       next[placeId] = countryId;
       return next;
     });
+    setWrongIds((current) => {
+      const next = new Set(current);
+      for (const id of Object.keys(placements)) {
+        if (placements[id] === countryId) {
+          next.delete(id);
+        }
+      }
+      if (correct) {
+        next.delete(placeId);
+      } else {
+        next.add(placeId);
+      }
+      return next;
+    });
+    if (correct) {
+      setLocked((current) => new Set(current).add(placeId));
+      setFlashToken((current) => current + 1);
+      setNotice(
+        locked.size + 1 === INDUSTRIAL_PLACES.length ? "全部配對正確。" : `${name}，正確。`,
+      );
+    } else {
+      setFlashToken((current) => current + 1);
+      setMistakes((current) => current + 1);
+      setNotice(`${name}放錯了。`);
+    }
     setSelectedId(null);
-    setNotice(`${findPlace(countryId)?.name ?? "名稱"}已放到數字 ${findPlace(placeId)?.number ?? ""}。`);
   }
 
   function unplace(countryId: string) {
@@ -99,6 +127,15 @@ export function PlaceMatch() {
       for (const id of Object.keys(next)) {
         if (next[id] === countryId && !locked.has(id)) {
           next[id] = null;
+        }
+      }
+      return next;
+    });
+    setWrongIds((current) => {
+      const next = new Set(current);
+      for (const id of Object.keys(placements)) {
+        if (placements[id] === countryId) {
+          next.delete(id);
         }
       }
       return next;
@@ -229,53 +266,6 @@ export function PlaceMatch() {
     setNotice(`已選擇${name}。點地圖上的數字，或直接拖到數字上。`);
   }
 
-  function checkAnswers() {
-    const nextLocked = new Set(locked);
-    const nextPlacements = { ...placements };
-    const wrong = new Set<string>();
-    let unplaced = 0;
-
-    for (const place of INDUSTRIAL_PLACES) {
-      if (nextLocked.has(place.id)) {
-        continue;
-      }
-      const countryId = nextPlacements[place.id];
-      if (!countryId) {
-        unplaced += 1;
-        continue;
-      }
-      if (countryId === place.id) {
-        nextLocked.add(place.id);
-        continue;
-      }
-      nextPlacements[place.id] = null;
-      wrong.add(place.id);
-    }
-
-    setPlacements(nextPlacements);
-    setLocked(nextLocked);
-    setWrongIds(wrong);
-    setFlashToken((current) => current + 1);
-    setMistakes((current) => current + wrong.size);
-    setSelectedId(null);
-
-    if (nextLocked.size === INDUSTRIAL_PLACES.length) {
-      setNotice("全部配對正確。");
-      return;
-    }
-    if (wrong.size > 0 && unplaced > 0) {
-      setNotice(
-        `${wrong.size} 個位置不正確，名稱已放回；還有 ${unplaced} 個空位。`,
-      );
-      return;
-    }
-    if (wrong.size > 0) {
-      setNotice(`${wrong.size} 個位置不正確，名稱已放回名稱列。`);
-      return;
-    }
-    setNotice(`正確的已鎖上。還有 ${unplaced} 個位置未放入名稱。`);
-  }
-
   function resetGame() {
     setPlacements(emptyPlacements());
     setLocked(new Set());
@@ -283,7 +273,7 @@ export function PlaceMatch() {
     setSelectedId(null);
     setMistakes(0);
     setOrder(shufflePlaces(INDUSTRIAL_PLACES).map((place) => place.id));
-    setNotice("新的一局開始了。把國家名稱拖到對應的數字。");
+    setNotice("新的一局開始了。放到數字上會立刻顯示對錯。");
   }
 
   return (
@@ -297,7 +287,7 @@ export function PlaceMatch() {
             工業帶國家配對
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-            地圖上每個國家都有一個數字按鈕。把名稱拖到正確的數字，或先點名稱再點數字。
+            把名稱拖到數字上，或先點名稱再點數字。放下之後會立刻顯示對錯。
           </p>
         </div>
         <span className="inline-flex min-h-10 items-center gap-2 self-start rounded-full bg-orange-50 px-3 text-sm font-bold text-orange-800 dark:bg-orange-500/15 dark:text-orange-200">
@@ -371,7 +361,7 @@ export function PlaceMatch() {
         </div>
       </div>
       <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-        手機可以左右滑動地圖。名稱可以拖回下方名稱列再放一次。
+        綠色是正確並已鎖上，紅色是放錯，可以再拖去另一個數字。手機可以左右滑動地圖。
       </p>
 
       <div
@@ -420,40 +410,24 @@ export function PlaceMatch() {
           </ul>
         ) : (
           <p className="py-2 text-sm text-slate-500 dark:text-slate-400">
-            {finished ? "九個國家都已鎖在正確位置。" : "名稱都在地圖上了。"}
+            {finished ? "九個國家都已鎖在正確位置。" : "紅色的可以再拖去正確數字。"}
           </p>
         )}
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        {finished ? (
-          <button
-            type="button"
-            onClick={resetGame}
-            className="press inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-slate-900 px-6 text-sm font-bold text-white dark:bg-white dark:text-slate-950"
-          >
-            <RotateCcw className="size-4" aria-hidden="true" />
-            再玩一次
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={checkAnswers}
-            className="press inline-flex min-h-12 items-center justify-center rounded-full bg-orange-500 px-6 text-sm font-bold text-slate-950"
-          >
-            核對答案
-          </button>
-        )}
-        {!finished ? (
-          <button
-            type="button"
-            onClick={resetGame}
-            className="press inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-slate-300 px-5 text-sm font-bold text-slate-700 dark:border-slate-600 dark:text-slate-200"
-          >
-            <RotateCcw className="size-4" aria-hidden="true" />
-            重新開始
-          </button>
-        ) : null}
+        <button
+          type="button"
+          onClick={resetGame}
+          className={`press inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-sm font-bold ${
+            finished
+              ? "bg-slate-900 text-white dark:bg-white dark:text-slate-950"
+              : "border border-slate-300 text-slate-700 dark:border-slate-600 dark:text-slate-200"
+          }`}
+        >
+          <RotateCcw className="size-4" aria-hidden="true" />
+          {finished ? "再玩一次" : "重新開始"}
+        </button>
       </div>
 
       {finished ? (
@@ -523,7 +497,7 @@ function PlacePin({
         locked
           ? `數字 ${place.number}，${country?.name ?? ""}，正確`
           : country
-            ? `數字 ${place.number}，已放入${country.name}`
+            ? `數字 ${place.number}，已放入${country.name}，不正確`
             : `數字 ${place.number}，空位`
       }
       className={`absolute aspect-square w-[2.3%] -translate-x-1/2 -translate-y-1/2 touch-none rounded-full border-2 border-white shadow-md ${
@@ -543,7 +517,7 @@ function PlacePin({
       {country ? (
         <span
           className={`absolute z-20 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-bold text-white shadow ${LABEL_CLASS[place.label]} ${
-            locked ? "bg-emerald-700" : "bg-slate-900"
+            locked ? "bg-emerald-700" : wrong ? "bg-red-600" : "bg-slate-900"
           } ${dragging ? "opacity-40" : ""}`}
         >
           {country.name}
