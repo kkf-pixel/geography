@@ -191,10 +191,30 @@ body {
   }
 }
 
+@keyframes pin-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+.pin-shake {
+  animation: pin-shake 0.35s ease-in-out 2;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .click-feedback {
     animation: none;
     opacity: 0.9;
+  }
+  .pin-shake {
+    animation: none;
   }
   .lift-card,
   .lift-card:hover,

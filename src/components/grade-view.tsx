@@ -2,6 +2,7 @@ import type { Grade } from "@/lib/curriculum";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Container } from "@/components/container";
 import { MapGameLink } from "@/components/map-game-link";
+import { PlaceMatchLink } from "@/components/place-match-link";
 import { SkyQuizLink } from "@/components/sky-quiz-link";
 import { SquadGameLink } from "@/components/squad-game-link";
 
@@ -71,9 +72,10 @@ export function GradeView({ grade }: { grade: Grade }) {
           <div>
             <h2 className="text-lg font-bold">溫習遊戲</h2>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-              單元一至三共用一個遊戲：按掣開啟雲階問答塔。
+              單元一至三共用兩個遊戲：先在世界地圖配對國家，再按掣開啟雲階問答塔。
             </p>
           </div>
+          <PlaceMatchLink />
           <SkyQuizLink />
         </div>
       )}
