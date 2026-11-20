@@ -2,6 +2,7 @@ import type { Grade } from "@/lib/curriculum";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Container } from "@/components/container";
 import { MapGameLink } from "@/components/map-game-link";
+import { OldTownMatchLink } from "@/components/old-town-match-link";
 import { PlaceMatchLink } from "@/components/place-match-link";
 import { SkyQuizLink } from "@/components/sky-quiz-link";
 import { SquadGameLink } from "@/components/squad-game-link";
@@ -61,10 +62,11 @@ export function GradeView({ grade }: { grade: Grade }) {
           <div>
             <h2 className="text-lg font-bold">溫習遊戲</h2>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-              單元一至三共用兩個遊戲：先認18區，再以衝鋒隊溫習土地利用。
+              單元一至三共用三個遊戲：先認18區，再配對維多利亞港兩岸的舊市區，然後以衝鋒隊溫習土地利用。
             </p>
           </div>
           <MapGameLink />
+          <OldTownMatchLink />
           <SquadGameLink />
         </div>
       ) : (
