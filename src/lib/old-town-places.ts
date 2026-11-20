@@ -19,21 +19,20 @@ export const OLD_TOWN_MAP_WIDTH = 646;
 export const OLD_TOWN_MAP_HEIGHT = 385;
 
 /**
- * Numbered pins replace letters A–J on the Victoria Harbour old-town map.
- * Coordinates were measured on the 646×385 source, at each letter.
- * B has no separate letter glyph on the scan, so 2 sits above that district.
+ * Numbered pins sit on the red old-town districts of the 646×385 map.
+ * Each center is the red area for that place, not a label beside it.
  */
 export const OLD_TOWN_PLACES: OldTownPlace[] = [
-  { id: "wan-chai", name: "灣仔", number: 1, x: 47.21, y: 66.88, label: "bottom" },
-  { id: "ma-tau-kok", name: "馬頭角 / 土瓜灣 / 紅磡", number: 2, x: 54.49, y: 11.95, label: "right" },
-  { id: "kwun-tong", name: "觀塘", number: 3, x: 79.41, y: 25.45, label: "right" },
-  { id: "sham-shui-po", name: "深水埗", number: 4, x: 34.71, y: 6.23, label: "left" },
-  { id: "sai-ying-pun", name: "西營盤", number: 5, x: 28.72, y: 58.31, label: "top" },
-  { id: "tai-kok-tsui", name: "大角咀", number: 6, x: 31.35, y: 23.51, label: "left" },
-  { id: "yau-tong", name: "油塘", number: 7, x: 87.0, y: 49.87, label: "top" },
-  { id: "kennedy-town", name: "堅尼地城", number: 8, x: 18.34, y: 63.77, label: "bottom" },
-  { id: "mong-kok", name: "旺角 / 油麻地", number: 9, x: 40.71, y: 24.42, label: "top" },
-  { id: "shau-kei-wan", name: "筲箕灣", number: 10, x: 80.19, y: 65.71, label: "top" },
+  { id: "wan-chai", name: "灣仔", number: 1, x: 44.13, y: 69.92, label: "bottom" },
+  { id: "ma-tau-kok", name: "馬頭角 / 土瓜灣 / 紅磡", number: 2, x: 53.89, y: 28.57, label: "right" },
+  { id: "kwun-tong", name: "觀塘", number: 3, x: 76.25, y: 28.94, label: "right" },
+  { id: "sham-shui-po", name: "深水埗", number: 4, x: 36.18, y: 14.05, label: "left" },
+  { id: "sai-ying-pun", name: "西營盤", number: 5, x: 24.69, y: 60.91, label: "bottom" },
+  { id: "tai-kok-tsui", name: "大角咀", number: 6, x: 36.75, y: 22.29, label: "left" },
+  { id: "yau-tong", name: "油塘", number: 7, x: 83.42, y: 53.04, label: "top" },
+  { id: "kennedy-town", name: "堅尼地城", number: 8, x: 18.79, y: 62.7, label: "bottom" },
+  { id: "mong-kok", name: "旺角 / 油麻地", number: 9, x: 40.74, y: 22.88, label: "right" },
+  { id: "shau-kei-wan", name: "筲箕灣", number: 10, x: 77.83, y: 68.42, label: "top" },
 ];
 
 const PLACES_BY_ID = new Map(OLD_TOWN_PLACES.map((place) => [place.id, place]));
