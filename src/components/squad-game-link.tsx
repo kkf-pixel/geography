@@ -20,7 +20,7 @@ export function SquadGameLink() {
         </div>
         <span className="inline-flex min-h-10 items-center gap-2 self-start rounded-full bg-orange-50 px-3 text-sm font-bold text-orange-800 dark:bg-orange-500/15 dark:text-orange-200">
           <Swords className="size-4" aria-hidden="true" />
-          遊戲二
+          遊戲三
         </span>
       </div>
       <a
