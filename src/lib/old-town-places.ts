@@ -32,7 +32,7 @@ export const OLD_TOWN_PLACES: OldTownPlace[] = [
   { id: "tai-kok-tsui", name: "大角咀", number: 6, x: 31.35, y: 23.51, label: "left" },
   { id: "yau-tong", name: "油塘", number: 7, x: 87.0, y: 49.87, label: "top" },
   { id: "kennedy-town", name: "堅尼地城", number: 8, x: 18.34, y: 63.77, label: "bottom" },
-  { id: "mong-kok", name: "旺角 / 油麻地", number: 9, x: 51.16, y: 24.42, label: "top" },
+  { id: "mong-kok", name: "旺角 / 油麻地", number: 9, x: 40.71, y: 24.42, label: "top" },
   { id: "shau-kei-wan", name: "筲箕灣", number: 10, x: 80.19, y: 65.71, label: "top" },
 ];
 
