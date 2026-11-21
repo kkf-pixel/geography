@@ -25,7 +25,7 @@ export const INDUSTRIAL_PLACES: IndustrialPlace[] = [
   { id: "china", name: "中國", number: 1, x: 37.55, y: 40.91, label: "left" },
   { id: "japan", name: "日本", number: 2, x: 43.49, y: 45.04, label: "right" },
   { id: "korea", name: "韓國", number: 3, x: 40.61, y: 44.21, label: "bottom" },
-  { id: "thailand", name: "泰國", number: 4, x: 37.64, y: 50.83, label: "right" },
+  { id: "thailand", name: "泰國", number: 4, x: 34.00, y: 59.30, label: "right" },
   { id: "indonesia", name: "印尼", number: 5, x: 33.24, y: 68.18, label: "right" },
   { id: "india", name: "印度", number: 6, x: 33.33, y: 55.37, label: "left" },
   { id: "uk", name: "英國", number: 7, x: 4.21, y: 28.93, label: "right" },
