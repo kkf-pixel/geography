@@ -13,12 +13,12 @@ export function PlaceMatchLink() {
           </p>
           <h2 className="mt-1 text-2xl font-bold tracking-tight">工業帶國家配對</h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-            在世界工業帶地圖上，把中國、日本、韓國、泰國、印尼、印度、英國、美國、墨西哥拖到對應的數字按鈕。
+            在世界地圖上，把印尼、美國、泰國、英國、越南、中國、日本、印度、孟加拉、墨西哥拖到對應的數字按鈕。
           </p>
         </div>
         <span className="inline-flex min-h-10 items-center gap-2 self-start rounded-full bg-orange-50 px-3 text-sm font-bold text-orange-800 dark:bg-orange-500/15 dark:text-orange-200">
           <MapPinned className="size-4" aria-hidden="true" />
-          九國配對
+          十國配對
         </span>
       </div>
       <Link
