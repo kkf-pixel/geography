@@ -12,25 +12,26 @@ export type IndustrialPlace = {
   label: LabelAnchor;
 };
 
-export const INDUSTRIAL_MAP_SRC = withBasePath("/maps/industrial-belts.png");
+export const INDUSTRIAL_MAP_SRC = withBasePath("/maps/s2-world-map.png");
 
-export const INDUSTRIAL_MAP_WIDTH = 1044;
-export const INDUSTRIAL_MAP_HEIGHT = 484;
+export const INDUSTRIAL_MAP_WIDTH = 715;
+export const INDUSTRIAL_MAP_HEIGHT = 382;
 
 /**
- * Numbered pins sit on each country of the industrial-belt map.
- * Coordinates were measured against the 1044×484 source image.
+ * Numbered pins replace letters A–J on the 715×382 world map.
+ * A=1 … I=9, and J=10.
  */
 export const INDUSTRIAL_PLACES: IndustrialPlace[] = [
-  { id: "china", name: "中國", number: 1, x: 37.55, y: 40.91, label: "left" },
-  { id: "japan", name: "日本", number: 2, x: 43.49, y: 45.04, label: "right" },
-  { id: "korea", name: "韓國", number: 3, x: 40.61, y: 44.21, label: "bottom" },
-  { id: "thailand", name: "泰國", number: 4, x: 34.00, y: 59.30, label: "right" },
-  { id: "indonesia", name: "印尼", number: 5, x: 33.24, y: 68.18, label: "right" },
-  { id: "india", name: "印度", number: 6, x: 33.33, y: 55.37, label: "left" },
-  { id: "uk", name: "英國", number: 7, x: 4.21, y: 28.93, label: "right" },
-  { id: "usa", name: "美國", number: 8, x: 76.82, y: 39.67, label: "top" },
-  { id: "mexico", name: "墨西哥", number: 9, x: 76.82, y: 53.31, label: "bottom" },
+  { id: "indonesia", name: "印尼", number: 1, x: 33.73, y: 65.76, label: "bottom" },
+  { id: "usa", name: "美國", number: 2, x: 77.63, y: 30.48, label: "right" },
+  { id: "thailand", name: "泰國", number: 3, x: 32.24, y: 52.33, label: "right" },
+  { id: "uk", name: "英國", number: 4, x: 9.61, y: 9.30, label: "left" },
+  { id: "vietnam", name: "越南", number: 5, x: 44.27, y: 46.69, label: "right" },
+  { id: "china", name: "中國", number: 6, x: 35.98, y: 33.97, label: "left" },
+  { id: "japan", name: "日本", number: 7, x: 50.13, y: 36.32, label: "right" },
+  { id: "india", name: "印度", number: 8, x: 28.78, y: 42.39, label: "left" },
+  { id: "bangladesh", name: "孟加拉", number: 9, x: 30.00, y: 54.32, label: "left" },
+  { id: "mexico", name: "墨西哥", number: 10, x: 78.74, y: 42.66, label: "bottom" },
 ];
 
 const PLACES_BY_ID = new Map(INDUSTRIAL_PLACES.map((place) => [place.id, place]));

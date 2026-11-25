@@ -30,7 +30,8 @@ const INITIAL_ORDER = [
   "japan",
   "mexico",
   "india",
-  "korea",
+  "vietnam",
+  "bangladesh",
   "china",
 ];
 
@@ -47,9 +48,9 @@ function emptyPlacements(): Placements {
 
 function resultMessage(mistakes: number) {
   if (mistakes === 0) {
-    return "一次就全部配對正確，你對這張工業帶地圖很熟。";
+    return "一次就全部配對正確，你對這張世界地圖很熟。";
   }
-  return "九個國家都放對位置了。";
+  return "十個國家都放對位置了。";
 }
 
 export function PlaceMatch() {
@@ -302,7 +303,7 @@ export function PlaceMatch() {
         </div>
         <span className="inline-flex min-h-10 items-center gap-2 self-start rounded-full bg-orange-50 px-3 text-sm font-bold text-orange-800 dark:bg-orange-500/15 dark:text-orange-200">
           <MapPinned className="size-4" aria-hidden="true" />
-          九國配對
+          十國配對
         </span>
       </div>
 
@@ -334,7 +335,7 @@ export function PlaceMatch() {
         >
           <img
             src={INDUSTRIAL_MAP_SRC}
-            alt="世界工業帶地圖。數字按鈕標在中國、日本、韓國、泰國、印尼、印度、英國、美國和墨西哥。"
+            alt="世界地圖。數字按鈕標在印尼、美國、泰國、英國、越南、中國、日本、印度、孟加拉和墨西哥。"
             className="absolute inset-0 h-full w-full select-none"
             draggable={false}
           />
@@ -420,7 +421,7 @@ export function PlaceMatch() {
           </ul>
         ) : (
           <p className="py-2 text-sm text-slate-500 dark:text-slate-400">
-            {finished ? "九個國家都已鎖在正確位置。" : "名稱都在地圖上了。"}
+            {finished ? "十個國家都已鎖在正確位置。" : "名稱都在地圖上了。"}
           </p>
         )}
       </div>
