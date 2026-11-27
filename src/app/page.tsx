@@ -2,6 +2,7 @@ import { Compass, Layers, MapPinned } from "lucide-react";
 import { Container } from "@/components/container";
 import { GradeCard } from "@/components/grade-card";
 import { Skyline } from "@/components/skyline";
+import { StreetRunnerLink } from "@/components/street-runner-link";
 import { grades } from "@/lib/curriculum";
 
 const steps = [
@@ -67,6 +68,10 @@ export default function HomePage() {
           {grades.map((grade) => (
             <GradeCard key={grade.id} grade={grade} />
           ))}
+        </div>
+
+        <div className="mt-8 sm:mt-10">
+          <StreetRunnerLink />
         </div>
 
         <h2 className="mt-12 text-2xl font-bold sm:mt-16">怎樣開始</h2>
