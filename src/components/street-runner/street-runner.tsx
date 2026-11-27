@@ -138,7 +138,7 @@ export function StreetRunner() {
       {hud.phase !== "ready" ? (
         <div className="pointer-events-none absolute top-4 left-4 border-[3px] border-[#e7edf5] bg-[#121826]/92 px-3 py-2 shadow-[4px_4px_0_#05070c]">
           <p className="font-display text-lg leading-none font-bold text-[#ffe56a]">
-            得分：{scoreLabel}
+            得分: {scoreLabel}
           </p>
           <p className="mt-1 text-sm text-slate-200">距離 {hud.distance} m</p>
           {hud.multOn ? (
@@ -159,7 +159,10 @@ export function StreetRunner() {
       </button>
 
       {fx ? (
-        <p className="font-display pointer-events-none absolute top-[16%] left-1/2 -translate-x-1/2 text-5xl font-black tracking-wide text-orange-400 drop-shadow-[0_4px_0_#2a1000] sm:text-7xl">
+        <p
+          className="font-display pointer-events-none absolute top-[18%] left-1/2 -translate-x-1/2 text-6xl font-black tracking-wide text-[#ffe14a] sm:text-8xl"
+          style={{ WebkitTextStroke: "8px #c42323", paintOrder: "stroke fill" }}
+        >
           {fx}
         </p>
       ) : null}

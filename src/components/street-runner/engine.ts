@@ -11,10 +11,11 @@ import {
 } from "./character";
 import {
   createSegment,
-  createStars,
+  createSkyTexture,
   createTemplates,
   LANE_X,
   SEG_LEN,
+  shadowMaterial,
   type ObstacleKind,
 } from "./scenery";
 
@@ -190,29 +191,21 @@ export function mountRunner(
   });
   renderer.setPixelRatio(1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.setClearColor(0x0c1424, 1);
+  renderer.setClearColor(0x121a30, 1);
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0c1424);
-  scene.fog = new THREE.Fog(0x0c1424, 26, 108);
+  scene.background = createSkyTexture() ?? new THREE.Color(0x121a30);
+  scene.fog = new THREE.Fog(0x1c2744, 18, 72);
 
-  const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 160);
-  camera.position.set(-0.58, 1.98, -5.15);
-  camera.lookAt(0.1, 0.72, 12);
+  const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 180);
+  camera.position.set(0, 2.05, -5.05);
+  camera.lookAt(0, 0.72, 12);
 
   const rig = createRunner();
   scene.add(rig.root);
   const runner = new Runner(rig);
 
-  const shadow = new THREE.Mesh(
-    new THREE.CircleGeometry(0.42, 8),
-    new THREE.MeshBasicMaterial({
-      color: 0x000000,
-      transparent: true,
-      opacity: 0.38,
-      depthWrite: false,
-    }),
-  );
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 0.55), shadowMaterial());
   shadow.rotation.x = -Math.PI / 2;
   shadow.position.y = 0.04;
   scene.add(shadow);
@@ -224,7 +217,6 @@ export function mountRunner(
   ground.rotation.x = -Math.PI / 2;
   ground.position.set(0, -0.06, 40);
   scene.add(ground);
-  scene.add(createStars());
 
   const segments: THREE.Group[] = [];
   for (let i = 0; i < 6; i += 1) {
@@ -504,7 +496,8 @@ export function mountRunner(
     for (const entity of entities) {
       if (!entity.alive || (entity.kind !== "coin" && entity.kind !== "mult")) continue;
       const base = entity.kind === "mult" ? 1.25 : 0.92;
-      entity.mesh.rotation.y = spin * (entity.kind === "mult" ? 2.2 : 3.4);
+      const face = Math.abs(Math.sin(spin * 5 + entity.mesh.position.z));
+      entity.mesh.scale.x = 0.16 + face * 0.84;
       entity.mesh.position.y = base + Math.sin(spin * 3 + entity.mesh.position.z) * 0.08;
     }
   }
@@ -572,6 +565,7 @@ export function mountRunner(
     canvas.dataset.lane = String(runner.lane);
     canvas.dataset.nearest = nearest;
     canvas.dataset.nearestZ = nearest ? nearestZ.toFixed(2) : "";
+    canvas.dataset.sprites = rig.ready ? "1" : "0";
   }
 
   function simulate(dt: number) {
@@ -610,8 +604,8 @@ export function mountRunner(
   function resize() {
     const width = canvas.clientWidth || window.innerWidth;
     const height = canvas.clientHeight || window.innerHeight;
-    const bufferWidth = Math.max(320, Math.floor(width / 2));
-    const bufferHeight = Math.max(180, Math.floor(height / 2));
+    const bufferWidth = Math.max(640, Math.floor(width));
+    const bufferHeight = Math.max(360, Math.floor(height));
     renderer.setSize(bufferWidth, bufferHeight, false);
     camera.aspect = bufferWidth / bufferHeight;
     camera.updateProjectionMatrix();
@@ -657,8 +651,9 @@ export function mountRunner(
       if (phase !== "running") return;
       if (action === "left" || action === "right") {
         const before = runner.lane;
+        // World +X is screen-left because the camera looks down +Z.
         runner.lane =
-          action === "left" ? Math.max(-1, runner.lane - 1) : Math.min(1, runner.lane + 1);
+          action === "left" ? Math.min(1, runner.lane + 1) : Math.max(-1, runner.lane - 1);
         if (runner.lane !== before) audio.lane();
         return;
       }
